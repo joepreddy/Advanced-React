@@ -22,6 +22,7 @@
       "react/react-in-jsx-scope": ["off"],
       "react/jsx-curly-spacing": ["off"],
       "react/no-array-index-key": ["off"],
+      "react/jsx-one-expression-per-line": ["off"],
       "import/prefer-default-export": ["off"],
       "import/no-named-as-default": ["off"],
       "array-bracket-spacing": ["off"],
