@@ -7,10 +7,6 @@ import ItemStyles from './styles/ItemStyles'
 import PriceTag from './styles/PriceTag'
 import formatMoney from '../lib/formatMoney'
 
-const propTypes = {
-  item: PropTypes.object.isRequired,
-}
-
 const Item = ({ item }) => (
   <ItemStyles>
     {item.image && <img src={item.image} alt={item.title} />}
@@ -41,5 +37,9 @@ const Item = ({ item }) => (
     </div>
   </ItemStyles>
 )
+
+Item.propTypes = {
+  item: PropTypes.object.isRequired,
+}
 
 export default Item
