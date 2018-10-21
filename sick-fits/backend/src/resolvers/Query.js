@@ -4,6 +4,7 @@ const Query = {
 
   items: forwardTo('db'),
   item: forwardTo('db'),
+  itemsConnection: forwardTo('db'),
 
   // Longhanded way - forward if there's no additional logic to be done
   // async items(parent, args, ctx, info) {

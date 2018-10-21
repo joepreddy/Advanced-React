@@ -2,12 +2,15 @@ import React from 'react'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import styled from 'styled-components'
+import PropTypes from 'prop-types'
 
 import Item from './Item'
+import Pagination from './Pagination'
+import { perPage } from '../config'
 
 const ALL_ITEMS_QUERY = gql`
-  query ALL_ITEMS_QUERY {
-    items {
+  query ALL_ITEMS_QUERY($skip: Int = 0, $first: Int = ${perPage}) {
+    items (first: $first, skip: $skip, orderBy: createdAt_DESC){
       id
       title
       price
@@ -28,9 +31,15 @@ const ItemsList = styled.div`
   margin: 0 auto;
 `
 
-const Items = () => (
+const Items = ({ page }) => (
   <Center>
-    <Query query={ALL_ITEMS_QUERY}>
+    <Pagination page={page} />
+    <Query
+      query={ALL_ITEMS_QUERY}
+      variables={{
+        skip: page * perPage - perPage,
+      }}
+    >
       {({ data, loading, error }) => {
         if (loading) return <p>Loading...</p>
         if (error) return <p>Error: {error.message}</p>
@@ -39,8 +48,13 @@ const Items = () => (
         )
       }}
     </Query>
+    <Pagination page={page} />
   </Center>
 )
+
+Items.propTypes = {
+  page: PropTypes.number,
+}
 
 export default Items
 export { ALL_ITEMS_QUERY }
