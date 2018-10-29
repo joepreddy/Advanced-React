@@ -2,12 +2,19 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { randomBytes } = require('crypto')
 const { promisify } = require('util')
+const { transport, createEmail } = require('../mail')
 
 const Mutations = {
   async createItem(parent, args, ctx, info) {
-    // TODO Check if logged in
+    if (!ctx.request.userId) throw new Error('You must be logged in to create an item!')
     const item = await ctx.db.mutation.createItem({
       data: {
+        // Creating a relationship between the user and the item
+        user: {
+          connect: {
+            id: ctx.request.userId,
+          },
+        },
         ...args,
       },
     }, info)
@@ -83,6 +90,14 @@ const Mutations = {
       where: { email: args.email },
       data: { resetToken, resetTokenExpiry },
     })
+
+    const mailRes = await transport.sendMail({
+      from: 'sick-fits@sick-fits.com',
+      to: user.email,
+      subject: 'Reset Your Sick-Fits Password',
+      html: createEmail(`Your password reset token is here! \n\n <a href="${process.env.FRONTEND_URL}/reset?resetToken=${resetToken}"> Click here to reset!</a>`),
+    })
+
     return { message: 'Thanks' }
     // Email them the reset token
   },
