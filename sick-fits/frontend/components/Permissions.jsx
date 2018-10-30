@@ -1,3 +1,4 @@
+import React, { Component } from 'react'
 import { Query } from 'react-apollo'
 import gql from 'graphql-tag'
 import PropTypes from 'prop-types'
@@ -42,7 +43,7 @@ const Permissions = props => (
               </tr>
             </thead>
             <tbody>
-              {data.users.map(user => <User user={user} key={user.id} />)}
+              {data.users.map(user => <UserPermissions user={user} key={user.id} />)}
             </tbody>
           </Table>
         </div>
@@ -51,23 +52,56 @@ const Permissions = props => (
   </Query>
 )
 
-const User = ({ user }) => (
-  <tr>
-    <td>{user.name}</td>
-    <td>{user.email}</td>
-    {possiblePermissions.map(perm => (
-      <td key={`${user.id}-permission-${perm}`}>
-        <label htmlFor={`${user.id}-permission-${perm}`}>
-          <input type="checkbox" />
-        </label>
-      </td>
-    ))}
-    <td><SickButton>Submit</SickButton></td>
-  </tr>
-)
+class UserPermissions extends Component {
+  state = {
+    permissions: this.props.user.permissions,
+  }
 
-User.propTypes = {
-  user: PropTypes.object.isRequired,
+  handleChange = (e) => {
+    const { permissions } = this.state
+    const checkbox = e.target
+    let updatedPermissions = [...permissions]
+    if (checkbox.checked) {
+      updatedPermissions.push(checkbox.value)
+    } else {
+      updatedPermissions = updatedPermissions.filter(perm => perm !== checkbox.value)
+    }
+    this.setState({ permissions: updatedPermissions })
+  }
+
+  render() {
+    const { user } = this.props
+    const { permissions } = this.state
+    return (
+      <tr>
+        <td>{user.name}</td>
+        <td>{user.email}</td>
+        {possiblePermissions.map(perm => (
+          <td key={`${user.id}-permission-${perm}`}>
+            <label htmlFor={`${user.id}-permission-${perm}`}>
+              <input
+                type="checkbox"
+                checked={permissions.includes(perm)}
+                value={perm}
+                onChange={this.handleChange}
+              />
+            </label>
+          </td>
+        ))}
+        <td><SickButton>Submit</SickButton></td>
+      </tr>
+    )
+  }
+}
+
+
+UserPermissions.propTypes = {
+  user: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    id: PropTypes.string.isRequired,
+    permissions: PropTypes.array.isRequired,
+  }).isRequired,
 }
 
 export default Permissions
