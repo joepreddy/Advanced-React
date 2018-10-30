@@ -1,4 +1,5 @@
 import { Query } from 'react-apollo'
+import PropTypes from 'prop-types'
 import { CURRENT_USER_QUERY } from './User'
 import Signin from './Signin'
 
@@ -18,5 +19,9 @@ const SignInPrompt = props => (
     }}
   </Query>
 )
+
+SignInPrompt.propTypes = {
+  children: PropTypes.node.isRequired,
+}
 
 export default SignInPrompt
